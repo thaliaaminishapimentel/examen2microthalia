@@ -1,0 +1,14 @@
+# Ignore build artifacts and installed SDK (never commit binaries as only deliverable)
+build/
+Debug/
+Release/
+*.elf
+*.axf
+*.bin
+*.hex
+*.map
+*.o
+*.d
+.sdk/
+.vs/
+__pycache__/
