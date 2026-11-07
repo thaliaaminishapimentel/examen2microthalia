@@ -8,9 +8,9 @@
 **MCU:** MCXA156VLL (Arm Cortex-M33)  
 **IDE:** Visual Studio **Code** + MCUXpresso for VS Code (no Microsoft Visual Studio clásico)  
 **SDK:** MCUXpresso SDK para FRDM-MCXA156 (descargar desde NXP)  
-**Compilador:** Arm GNU Toolchain (instalar desde MCUXpresso Installer).
+**Compilador:** Arm GNU Toolchain; en las pruebas se utilizó 14.2.1 (MCUXpresso SDK 26.9.0, LinkServer 26.6.137).
 
-> **Estado:** núcleo de lógica verificado en PC; **compilación cruzada y pruebas físicas pendientes**. No contiene un `.elf` porque debe construirse para la versión del SDK instalada y tu placa.
+> **Estado de las pruebas (6 nov 2026):** la estudiante compiló, cargó y ejecutó el firmware en la FRDM-MCXA156 con MCUXpresso for VS Code; se observaron ADC, LED, SW2, UART y lógica de alarma. **P10 automático: 150/150 respuestas, 16 ms de latencia máxima aproximada y 30/30 intervalos de telemetría de 1 s**. Las mediciones físicas con instrumento y ciertos casos P01–P10 siguen pendientes; ver [evidencias/RESULTADOS_P01_P10.md](evidencias/RESULTADOS_P01_P10.md). No se incluye un `.elf` porque debe construirse localmente para el SDK instalado.
 
 ## Materiales y conexiones reales
 
@@ -25,6 +25,8 @@
 | Puerto UART de monitor | **LPUART0 / MCU-Link VCOM** | USB-C en **J21, MCU-Link**; no precisa cable UART externo |
 
 **Advertencia:** desconecta el USB antes de cablear. NO conectes el cursor del potenciómetro a 5 V. La tensión de referencia del ADC es VDDA/VREFH de la placa, **nominalmente 3.3 V** (se recomienda medirla). Comparte GND. Usa resistencias limitadoras en ambos LED.
+
+**Nota sobre materiales:** el enunciado pide potenciómetro de **10 kΩ**; las mediciones compartidas se hicieron con uno de **5 kΩ**. Un potenciómetro de 5 kΩ puede servir eléctricamente para la prueba, pero usa 10 kΩ o consulta al docente para cumplir la lista de materiales de la entrega.
 
 ## Parámetros de firmware
 
@@ -47,7 +49,7 @@
 5. En **Projects**, selecciona el proyecto `analog_alarm` y pulsa **Build Project**. Conecta USB-C **al puerto J21 (MCU-Link)** y pulsa **Debug / Flash**. Dale **Continue** si el programa queda detenido en `main`.
 6. Abre **Serial Monitor** en VS Code, selecciona `COMx - MCU-Link VCom Port` y fija **115200 8N1**, con terminador LF o CRLF.
 
-Si tu versión del SDK no importa correctamente este CMake independiente, usa la **ruta alternativa NXP oficial**: importa el ejemplo `driver_examples/lpadc/polling` para FRDM-MCXA156 como **Freestanding Project**, luego ejecuta el script `scripts/instalar_en_ejemplo.ps1 -Proyecto "C:\RUTA\AL\PROYECTO_IMPORTADO"` en PowerShell. El script reemplaza el C principal, añade la lógica y adapta los pines y dependencias. Vuelve a compilar desde MCUXpresso. El ejemplo aporta `hardware_init.c`, `pin_mux.h`, `app.h` y archivos CMake ya probados para la versión de SDK seleccionada. El script modifica el proyecto importado: guarda una copia si necesitas conservarlo.
+**Importante para repetir la compilación de este proyecto (sin importar ejemplos):** en `CMakeLists.txt` deben mantenerse `set(board frdmmcxa156)` y `set(board_root examples/_boards)` justo antes de incluir `mcux.cmake`. En esta práctica esas líneas solucionaron el error `There is no board variable.cmake`. Selecciona la configuración **debug** y usa el botón **Build** (no el de Debug) para compilar. Después conecta MCU-Link y ejecuta Debug para grabar la placa.
 
 **No es suficiente hacer `gcc main.c` en PowerShell:** este firmware usa registros y periféricos de la placa, por lo que requiere el SDK, el compilador Arm y la carga mediante MCU-Link.
 
@@ -88,4 +90,4 @@ También se puede alternar RUN/PAUSE pulsando **SW2**. Mantener SW2 presionado d
 
 ## Autoría y estado de verificación
 
-Firmware elaborado específicamente para este reto académico. La prueba del núcleo C fue ejecutada localmente y pasó; no se ha realizado la compilación cruzada en un equipo con MCUXpresso SDK ni la ejecución real en FRDM-MCXA156. Es indispensable compilar, cargar y medir en el hardware antes de indicar que el examen está concluido.
+Firmware elaborado para este reto académico. La estudiante confirmó compilación con el SDK de NXP, carga por MCU-Link y ejecución física sobre FRDM-MCXA156. La validación instrumental y algunos subcasos de P01–P10 siguen pendientes. Las evidencias UART P10 están incorporadas al repositorio con sus archivos originales.
